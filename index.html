@@ -1,0 +1,956 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portfolio · Afternoon Tea</title>
+<meta name="description" content="下午茶主题的互动个人作品集（复刻 Demo）">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playball&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ tokens ============ */
+:root{
+  --red:#b23a35; --red-soft:#a84a42; --cream:#f7f0dc; --cream-deep:#efe4c8;
+  --gold:#d9b95c; --green-rim:#7a9474; --tea:#b7c98b; --pink:#f2c3cd; --pink-deep:#c78a9c;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:"Noto Serif SC",Georgia,"Songti SC",serif;
+  background:#16301f; color:var(--red);
+  overflow:hidden; -webkit-font-smoothing:antialiased;
+}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+button:focus-visible{outline:3px dashed #fff;outline-offset:4px}
+svg{display:block}
+button svg{pointer-events:none}
+.script{font-family:Playball,"Brush Script MT",cursive}
+
+/* ============ scene system ============ */
+#stage{position:fixed;inset:0}
+.scene{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .55s ease,visibility 0s linear .55s;overflow:hidden}
+.scene.active{opacity:1;visibility:visible;transition:opacity .55s ease}
+.scene.active>*{animation:sceneIn .6s ease both}
+@keyframes sceneIn{from{opacity:.35}to{opacity:1}}
+.grain,.felt{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;mix-blend-mode:soft-light;opacity:.55}
+
+/* shared prop */
+.prop{position:absolute;display:block}
+.prop svg{width:100%;height:100%;overflow:visible}
+.hoverable{transition:transform .35s ease}
+.hoverable:hover{transform:translateY(-4px) rotate(-1deg) scale(1.03)}
+
+/* ============ HOME ============ */
+#scene-home{background:
+  radial-gradient(120% 90% at 50% 40%, #294a31 0%, #1d3a26 55%, #14291b 100%)}
+.felt{position:absolute;inset:0;pointer-events:none;opacity:.5}
+.quilt{position:absolute;left:4%;top:9%;width:92%;aspect-ratio:1000/560;filter:drop-shadow(0 14px 22px rgba(0,0,0,.4))}
+.doily-home{position:absolute;left:50%;top:52%;width:48vmin;aspect-ratio:1;transform:translate(-50%,-50%);filter:drop-shadow(0 6px 14px rgba(0,0,0,.28))}
+.plate-title{position:absolute;left:50%;top:52%;width:46vmin;aspect-ratio:560/360;transform:translate(-50%,-50%);filter:drop-shadow(0 10px 18px rgba(0,0,0,.3));border-radius:50%}
+.plate-title svg{overflow:visible}
+.cake-plate-home{left:1.5%;top:38%;width:26vmin;aspect-ratio:460/250;filter:drop-shadow(0 8px 14px rgba(0,0,0,.35))}
+.fork-home{left:24.5%;top:46%;width:11vmin;aspect-ratio:90/360;transform:rotate(9deg);filter:drop-shadow(0 6px 10px rgba(0,0,0,.3))}
+.spoon-home{left:65.8%;top:47.5%;width:11vmin;aspect-ratio:90/360;transform:rotate(6deg);filter:drop-shadow(0 6px 10px rgba(0,0,0,.3))}
+.teacup-home{left:71%;top:2.5%;width:21vmin;aspect-ratio:240/230;filter:drop-shadow(0 6px 12px rgba(0,0,0,.3))}
+.teapot-home{left:79%;top:28%;width:25vmin;aspect-ratio:340/260;filter:drop-shadow(0 8px 14px rgba(0,0,0,.35))}
+.teapot-home .pot-label{display:none}
+.teapot-home{--pot-label-o:0}
+.teapot-home:hover svg{transform:rotate(-3deg)}
+.teapot-home svg{transition:transform .4s ease}
+
+/* steam */
+.steam path{fill:none;stroke:#ffffff;stroke-width:5;stroke-linecap:round;opacity:0;animation:steam 3.4s ease-in-out infinite}
+.steam path:nth-child(2){animation-delay:1.7s}
+@keyframes steam{0%{opacity:0;transform:translateY(10px) scale(.9)}35%{opacity:.65}100%{opacity:0;transform:translateY(-20px) scale(1.08)}}
+
+/* dessert spawn */
+.dessert{position:absolute;pointer-events:none;animation:dessertPop 1.8s ease forwards;filter:drop-shadow(0 4px 6px rgba(0,0,0,.3))}
+.dessert svg{width:100%;height:100%}
+@keyframes dessertPop{
+  0%{transform:scale(0) rotate(-14deg);opacity:0}
+  22%{transform:scale(1.15) rotate(4deg);opacity:1}
+  38%{transform:scale(1)}
+  70%{opacity:1;transform:scale(1) translateY(-6px)}
+  100%{opacity:0;transform:scale(.92) translateY(-22px)}
+}
+
+/* ============ CUPS ============ */
+#scene-cups{background:repeating-linear-gradient(90deg,#d6899f 0 7vw,#2c4a36 7vw 14vw)}
+.tray-zone{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:74vmin;height:74vmin}
+.tray-zone>svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.doily-cups{filter:drop-shadow(0 8px 16px rgba(0,0,0,.3))}
+.cup{position:absolute;width:17.5vmin;aspect-ratio:170/160;transform:translate(-50%,-50%);filter:drop-shadow(0 6px 10px rgba(0,0,0,.32));border-radius:24%}
+.cup svg{width:100%;height:100%;overflow:visible;transition:transform .3s ease}
+.cup:hover svg{transform:translateY(-7px) rotate(-2deg)}
+.cup .tea-surface{fill:var(--tea,#fdf6e6);transition:fill .8s ease}
+.cup.filled{--tea:#b7c98b}
+.cup.filled svg{animation:cupHappy .7s ease}
+@keyframes cupHappy{0%{transform:scale(1)}30%{transform:scale(1.07) rotate(-3deg)}60%{transform:scale(.98) rotate(2deg)}100%{transform:scale(1)}}
+.clickacup{position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);text-align:center;color:var(--red);font-size:7.2vmin;line-height:1.05;text-shadow:0 2px 0 rgba(255,255,255,.55);pointer-events:none}
+.potsvg{overflow:visible}
+.teapot-cups{left:auto;right:3%;top:6%;width:23vmin;aspect-ratio:340/260;filter:drop-shadow(0 8px 14px rgba(0,0,0,.35));transition:transform .85s cubic-bezier(.5,-.25,.35,1.15);z-index:5}
+.teapot-cups svg{transition:transform .85s ease}
+.teapot-cups:hover svg{transform:rotate(-4deg)}
+.teapot-cups.pouring{transform:translate(var(--dx,0),var(--dy,0)) rotate(-24deg) scale(.92)}
+.spark{position:absolute;width:12px;height:12px;pointer-events:none;animation:spark .8s ease forwards}
+.spark::before,.spark::after{content:"";position:absolute;left:50%;top:50%;background:#fff7d9;border-radius:2px}
+.spark::before{width:100%;height:3px;transform:translate(-50%,-50%)}
+.spark::after{width:3px;height:100%;transform:translate(-50%,-50%)}
+@keyframes spark{from{transform:scale(.3) rotate(0);opacity:1}to{transform:scale(1.4) rotate(80deg);opacity:0}}
+#pourStream{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4;overflow:visible}#pourStream path{fill:none;stroke:#b7c98b;stroke-width:1.1vmin;stroke-linecap:round;opacity:0}
+#pourStream path.on{opacity:.95;animation:pourJitter .5s ease-in-out infinite alternate;filter:drop-shadow(0 0 4px rgba(183,201,139,.7))}
+@keyframes pourJitter{from{transform:translateX(-2px)}to{transform:translateX(2px)}}
+
+/* ============ CAKES ============ */
+#scene-cakes{background:
+  repeating-linear-gradient(0deg,rgba(133,161,189,.42) 0 5.5vmin,transparent 5.5vmin 11vmin),
+  repeating-linear-gradient(90deg,rgba(133,161,189,.42) 0 5.5vmin,transparent 5.5vmin 11vmin),
+  #f0f3f5}
+.placemat{position:absolute;left:50%;top:53%;width:82vmin;height:47vmin;transform:translate(-50%,-50%)}
+.placemat svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 8px 16px rgba(90,110,130,.35))}
+.badge-home{position:absolute;left:50%;top:4.5%;width:24vmin;aspect-ratio:260/120;transform:translateX(-50%);filter:drop-shadow(0 5px 10px rgba(90,110,130,.4))}
+.badge-home svg{width:100%;height:100%;overflow:visible;transition:transform .3s ease}
+.badge-home:hover svg{transform:scale(1.06) rotate(-1.5deg)}
+.cake-big{position:absolute;left:50%;top:53%;width:40vmin;height:24vmin;transform:translate(-50%,-50%)}
+.plate-under{position:absolute;left:50%;top:56%;width:44vmin;aspect-ratio:460/250;transform:translate(-50%,-50%)}
+.slice{position:absolute;width:17vmin;aspect-ratio:190/190;transform:translate(-50%,-50%);filter:drop-shadow(0 7px 9px rgba(0,0,0,.28));border-radius:30%}
+.slice svg{width:100%;height:100%;overflow:visible;transition:transform .3s ease}
+.slice:hover svg{transform:translateY(-9px) rotate(-3deg)}
+.fork-cake{left:17%;top:40%;width:12vmin;aspect-ratio:90/360;transform:rotate(-4deg)}
+.spoon-cake{left:71%;top:40%;width:12vmin;aspect-ratio:90/360;transform:rotate(3deg)}
+
+/* ============ DETAIL ============ */
+#scene-detail{display:flex;background:#e3ead4}
+.detail-left{position:relative;width:43%;min-width:340px;height:100%;background:#f6eed9;padding:4.2vmin 4.6vmin;display:flex;flex-direction:column;overflow:auto}
+.detail-left .grain{opacity:.4}
+.back-btn{display:inline-flex;align-items:center;gap:.7vmin;align-self:flex-start;padding:.6vmin 1.2vmin .6vmin .4vmin;border-radius:99px;transition:transform .3s ease}
+.back-btn:hover{transform:translateX(-5px)}
+.back-btn .arr{font-size:2.6vmin;color:var(--red-soft)}
+.back-btn .bcup{width:4.6vmin;height:4.6vmin}
+.back-btn .bcup svg{width:100%;height:100%}
+.proj-title{display:flex;align-items:center;gap:1.6vmin;margin:3.4vmin 0 2.6vmin;color:var(--red);font-weight:700;font-size:3.4vmin;letter-spacing:.05em}
+.proj-title .ticon{width:4.4vmin;height:4.4vmin;flex:none}
+.proj-title .ticon svg{width:100%;height:100%}
+.proj-body p{color:var(--red-soft);font-size:1.78vmin;line-height:2.05;margin-bottom:1.9vmin;max-width:34em}
+.deco-btns{margin-top:auto;display:flex;align-items:center;gap:1.6vmin;padding-top:2.4vmin}
+.deco-btns .hb{width:5.6vmin;height:5.6vmin;border-radius:50%;background:#b23a35;display:grid;place-items:center;box-shadow:0 3px 8px rgba(0,0,0,.18);transition:transform .25s}
+.deco-btns .hb:hover{transform:scale(1.12)}
+.deco-btns .hb svg{width:58%;height:58%;fill:#f7f0dc}
+.deco-btns .gb{width:5.2vmin;height:5.2vmin;border-radius:50%;background:#efe4c8;box-shadow:inset 0 0 0 2px #dcc99b;display:grid;place-items:center}
+.deco-btns .gb::after{content:"";width:34%;height:34%;border-radius:50%;background:#d9b95c}
+.detail-right{position:relative;flex:1;height:100%;display:grid;place-items:center;padding:4vmin;
+  background:radial-gradient(#e9bcc6 3px,transparent 3.8px);background-size:34px 34px}
+.detail-right::before{content:"";position:absolute;inset:0;background:#e3ead4;opacity:.001}
+.tray-wrap{position:relative;width:min(88%,100vmin);aspect-ratio:660/430;filter:drop-shadow(0 14px 22px rgba(90,110,130,.4))}
+.tray-wrap>.traybg{position:absolute;inset:0}
+.kraft{position:absolute;inset:6.5% 5.5%;background:#ddbe90;
+  clip-path:polygon(1.5% 5%,20% 1%,55% 3%,98% 0.5%,99.5% 30%,98% 70%,99% 96%,60% 98.5%,25% 97.5%,1% 99%,2.5% 60%);
+  box-shadow:inset 0 0 40px rgba(120,85,40,.25)}
+.media-slot{position:absolute;inset:9.5% 8.5%;overflow:hidden}
+.media-slot svg{width:100%;height:100%}
+.media-slot .generic{width:100%;height:100%;background:#f9f3e1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2vmin}
+.media-slot .generic .gicon{width:16%;aspect-ratio:1}
+.media-slot .generic .gicon svg{width:100%;height:100%}
+.media-slot .generic .gname{font-family:Playball,cursive;font-size:4.6vmin;color:var(--red)}
+.traydeco{position:absolute;pointer-events:none;filter:drop-shadow(0 3px 5px rgba(0,0,0,.25))}
+.traydeco svg{width:100%;height:100%}
+/* carousel lamp svg */
+.lamp-svg .spin{transform-box:fill-box;transform-origin:center}
+.lamp-svg text.neon-script{font-family:Playball,cursive;font-size:44px;fill:#f6b8d0;filter:url(#neonPink)}
+.odyssey-photo{transform-box:fill-box;transform-origin:center;animation:kenburns 14s ease-in-out infinite alternate}
+@keyframes kenburns{from{transform:scale(1)}to{transform:scale(1.055) translate(-6px,4px)}}
+
+@media (max-width:760px){
+  #scene-detail{flex-direction:column;overflow:auto}
+  .detail-left{width:100%;height:auto;min-height:46%}
+  .detail-right{min-height:54%}
+  .proj-title{font-size:5.4vmin}.proj-body p{font-size:2.9vmin}
+  .back-btn .arr{font-size:4vmin}.back-btn .bcup{width:7vmin;height:7vmin}
+}
+@media (prefers-reduced-motion:reduce){
+  *,.steam path,.cup.filled svg,.odyssey-photo,.lamp-svg .spin{animation:none !important;transition:none !important}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= SVG DEFS ================= -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+  <filter id="grain" x="0" y="0" width="100%" height="100%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch"/>
+    <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.4 0"/>
+  </filter>
+  <filter id="feltF" x="0" y="0" width="100%" height="100%">
+    <feTurbulence type="turbulence" baseFrequency="0.035 0.05" numOctaves="3" seed="7" stitchTiles="stitch"/>
+    <feColorMatrix type="matrix" values="0 0 0 0 0.55  0 0 0 0 0.72  0 0 0 0 0.5  0 0 0 0.35 0"/>
+  </filter>
+  <filter id="neonPink" x="-40%" y="-40%" width="180%" height="180%">
+    <feGaussianBlur stdDeviation="2.4" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+
+  <!-- patch patterns -->
+  <pattern id="p-plaid" width="120" height="120" patternUnits="userSpaceOnUse">
+    <rect width="120" height="120" fill="#e9eef3"/>
+    <rect y="16" width="120" height="22" fill="#8aa8c2" opacity=".8"/>
+    <rect y="68" width="120" height="10" fill="#8aa8c2" opacity=".55"/>
+    <rect x="16" width="22" height="120" fill="#8aa8c2" opacity=".8"/>
+    <rect x="68" width="10" height="120" fill="#8aa8c2" opacity=".55"/>
+    <rect y="44" width="120" height="4" fill="#c4766e" opacity=".7"/>
+    <rect x="44" width="4" height="120" fill="#c4766e" opacity=".7"/>
+  </pattern>
+  <pattern id="p-stripe" width="64" height="64" patternUnits="userSpaceOnUse">
+    <rect width="64" height="64" fill="#eed7e2"/><rect width="18" height="64" fill="#d5a7c0"/>
+  </pattern>
+  <pattern id="p-mauve" width="64" height="64" patternUnits="userSpaceOnUse">
+    <rect width="64" height="64" fill="#dcc9de"/><rect width="14" height="64" fill="#c6abce"/>
+  </pattern>
+  <pattern id="p-polka" width="72" height="72" patternUnits="userSpaceOnUse">
+    <rect width="72" height="72" fill="#f4ced3"/>
+    <circle cx="18" cy="18" r="7.5" fill="#c25a60"/><circle cx="54" cy="54" r="7.5" fill="#c25a60"/>
+  </pattern>
+  <pattern id="p-floral" width="96" height="96" patternUnits="userSpaceOnUse">
+    <rect width="96" height="96" fill="#af4a50"/>
+    <g stroke="#f2e0c2" stroke-width="2.4" fill="none" stroke-linecap="round">
+      <path d="M22,74 q10,-30 34,-40"/><path d="M22,74 q-4,-20 6,-34"/>
+    </g>
+    <ellipse cx="60" cy="30" rx="5" ry="3" fill="#f2e0c2" transform="rotate(-35 60 30)"/>
+    <ellipse cx="24" cy="38" rx="4.5" ry="2.8" fill="#f2e0c2" transform="rotate(-60 24 38)"/>
+    <circle cx="80" cy="66" r="2.4" fill="#f2e0c2"/><circle cx="12" cy="88" r="2" fill="#f2e0c2"/>
+  </pattern>
+  <pattern id="p-damask" width="96" height="96" patternUnits="userSpaceOnUse">
+    <rect width="96" height="96" fill="#cfa65e"/>
+    <path d="M48,18 C62,32 62,46 48,60 C34,46 34,32 48,18 Z" fill="#b58b45"/>
+    <circle cx="48" cy="12" r="4" fill="#b58b45"/><circle cx="48" cy="66" r="4" fill="#b58b45"/>
+    <circle cx="10" cy="48" r="3.4" fill="#b58b45"/><circle cx="86" cy="48" r="3.4" fill="#b58b45"/>
+  </pattern>
+  <pattern id="p-rose" width="110" height="110" patternUnits="userSpaceOnUse">
+    <rect width="110" height="110" fill="#7c2f3c"/>
+    <g transform="translate(30,32)">
+      <circle cx="0" cy="-9" r="6.5" fill="#e6a4ae"/><circle cx="8.5" cy="-3" r="6.5" fill="#e6a4ae"/>
+      <circle cx="5" cy="7.5" r="6.5" fill="#e6a4ae"/><circle cx="-5" cy="7.5" r="6.5" fill="#e6a4ae"/>
+      <circle cx="-8.5" cy="-3" r="6.5" fill="#e6a4ae"/><circle cx="0" cy="0" r="4.6" fill="#f3d9c9"/>
+    </g>
+    <g transform="translate(85,88) scale(.8)">
+      <circle cx="0" cy="-9" r="6.5" fill="#e6a4ae"/><circle cx="8.5" cy="-3" r="6.5" fill="#e6a4ae"/>
+      <circle cx="5" cy="7.5" r="6.5" fill="#e6a4ae"/><circle cx="-5" cy="7.5" r="6.5" fill="#e6a4ae"/>
+      <circle cx="-8.5" cy="-3" r="6.5" fill="#e6a4ae"/><circle cx="0" cy="0" r="4.6" fill="#f3d9c9"/>
+    </g>
+    <path d="M52,80 q8,-8 16,-4" stroke="#56714b" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+  </pattern>
+  <pattern id="p-tile" width="88" height="88" patternUnits="userSpaceOnUse">
+    <rect width="88" height="88" fill="#e4edf4"/>
+    <path d="M0,44 L44,0 L88,44 L44,88 Z" fill="none" stroke="#a9c0d2" stroke-width="3"/>
+    <g fill="#7f9fd0"><circle cx="44" cy="36" r="3"/><circle cx="44" cy="52" r="3"/><circle cx="36" cy="44" r="3"/><circle cx="52" cy="44" r="3"/></g>
+    <circle cx="44" cy="44" r="2.4" fill="#c4766e"/>
+  </pattern>
+  <pattern id="p-cream" width="84" height="84" patternUnits="userSpaceOnUse">
+    <rect width="84" height="84" fill="#f1e4c2"/>
+    <path d="M42,32 l3.4,7.4 8,.9 -6,5.4 1.7,7.9 -7.1,-4.1 -7.1,4.1 1.7,-7.9 -6,-5.4 8,-.9 Z" fill="#d8b76b" opacity=".85"/>
+    <circle cx="8" cy="8" r="2.4" fill="#d8b76b" opacity=".7"/><circle cx="76" cy="76" r="2.4" fill="#d8b76b" opacity=".7"/>
+  </pattern>
+  <pattern id="p-gingham" width="48" height="48" patternUnits="userSpaceOnUse">
+    <rect width="48" height="48" fill="#f4f7f9"/>
+    <rect width="13" height="48" fill="#8aa4bf" opacity=".5"/>
+    <rect height="13" width="48" fill="#8aa4bf" opacity=".5"/>
+  </pattern>
+  <linearGradient id="gradSilver" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#eef1f4"/><stop offset=".5" stop-color="#d3d9df"/><stop offset="1" stop-color="#bfc7cf"/>
+  </linearGradient>
+  <clipPath id="quiltClip">
+    <path d="M30,152 C120,70 250,34 330,26 C470,12 640,14 740,36 C850,58 930,96 958,168 C984,238 982,330 954,398 C920,482 800,528 690,542 C540,562 360,560 240,540 C130,522 60,470 38,392 C18,318 16,220 30,152 Z"/>
+  </clipPath>
+
+  <!-- ===== symbols ===== -->
+  <!-- round lace doily -->
+  <symbol id="sym-doily" viewBox="0 0 420 420">
+    <g id="doilyDeco"></g>
+    <path fill-rule="evenodd" fill="#f7f1e2"
+      d="M210,14a196,196 0 1,0 .1,0Z M210,118a92,92 0 1,1 -.1,0Z"/>
+    <circle cx="210" cy="210" r="157" fill="none" stroke="#e6dcc2" stroke-width="2" stroke-dasharray="2 7"/>
+  </symbol>
+
+  <!-- oval title plate -->
+  <symbol id="sym-plate-title" viewBox="0 0 560 360">
+    <ellipse cx="280" cy="180" rx="252" ry="162" fill="#f9f2de" stroke="#7a9474" stroke-width="8"/>
+    <ellipse cx="280" cy="180" rx="224" ry="134" fill="none" stroke="#d9b95c" stroke-width="3"/>
+    <ellipse cx="280" cy="182" rx="186" ry="102" fill="#ece2c6"/>
+    <ellipse cx="280" cy="178" rx="176" ry="94" fill="#fbf5e4"/>
+    <path id="swagTop" d="M150,116 Q280,64 410,116" fill="none"/>
+    <path id="swagBot" d="M150,242 Q280,294 410,242" fill="none"/>
+    <g id="swagBeads" fill="#d9b95c"></g>
+    <g fill="#8fa8d8">
+      <circle cx="120" cy="176" r="3.4"/><circle cx="128" cy="186" r="3.4"/><circle cx="113" cy="187" r="3.4"/>
+      <circle cx="440" cy="176" r="3.4"/><circle cx="448" cy="186" r="3.4"/><circle cx="433" cy="187" r="3.4"/>
+      <circle cx="180" cy="256" r="3.2"/><circle cx="380" cy="256" r="3.2"/><circle cx="280" cy="66" r="3.2"/>
+    </g>
+    <ellipse cx="196" cy="112" rx="66" ry="30" fill="#ffffff" opacity=".28" transform="rotate(-16 196 112)"/>
+    <path id="arcTop" d="M180,130 Q280,96 380,130" fill="none"/>
+    <text font-family="Playball,cursive" font-size="12" fill="#8a8570" letter-spacing="1.5">
+      <textPath href="#arcTop" startOffset="50%" text-anchor="middle">product manager &amp; AI creator</textPath>
+    </text>
+    <text x="280" y="210" text-anchor="middle" font-family="Playball,cursive" font-size="84" fill="#b23a35" textLength="330" lengthAdjust="spacingAndGlyphs">Portfolio</text>
+    <text x="280" y="268" text-anchor="middle" font-family="Playball,cursive" font-size="17" fill="#8a8570">by Daria Lu</text>
+  </symbol>
+
+  <!-- cake slice -->
+  <symbol id="sym-slice" viewBox="0 0 190 190">
+    <path d="M45,70 L135,62 L140,150 L50,158 Z" fill="#e9c48e"/>
+    <path d="M45,70 L78,40 L168,36 L135,62 Z" fill="#f4dda9"/>
+    <g fill="#b98a54" opacity=".6">
+      <circle cx="66" cy="100" r="1.8"/><circle cx="92" cy="118" r="1.8"/><circle cx="120" cy="92" r="1.8"/>
+      <circle cx="80" cy="136" r="1.8"/><circle cx="126" cy="130" r="1.8"/>
+    </g>
+    <path d="M45,70 L135,62 L137,84 L46,92 Z" fill="#ffffff" opacity=".18"/>
+    <circle cx="62" cy="66" r="11" fill="#f9f2e0" stroke="#e3d4b4" stroke-width="1.5"/>
+    <circle cx="95" cy="60" r="11" fill="#f9f2e0" stroke="#e3d4b4" stroke-width="1.5"/>
+    <circle cx="126" cy="56" r="11" fill="#f9f2e0" stroke="#e3d4b4" stroke-width="1.5"/>
+    <circle cx="106" cy="40" r="13" fill="#c8373c"/>
+    <ellipse cx="101" cy="35" rx="4" ry="6.5" fill="#ffffff" opacity=".45" transform="rotate(-28 101 35)"/>
+    <path d="M106,27 C105,15 114,9 121,7" fill="none" stroke="#7c5535" stroke-width="3.4" stroke-linecap="round"/>
+    <ellipse cx="124" cy="6" rx="6" ry="3.4" fill="#7f9a6a" transform="rotate(-20 124 6)"/>
+  </symbol>
+
+  <!-- round plate with slices (home) -->
+  <symbol id="sym-plate-cake" viewBox="0 0 460 250">
+    <ellipse cx="230" cy="150" rx="215" ry="85" fill="#f9f3e1" stroke="#d9b95c" stroke-width="3"/>
+    <ellipse cx="230" cy="146" rx="168" ry="60" fill="#fdf8ea"/>
+    <use href="#sym-slice" x="52" y="34" width="150" height="150"/>
+    <use href="#sym-slice" x="160" y="16" width="160" height="160"/>
+    <use href="#sym-slice" x="268" y="30" width="150" height="150"/>
+  </symbol>
+
+  <!-- fork / spoon with ribbon bow -->
+  <symbol id="sym-fork" viewBox="0 0 90 360">
+    <g fill="#ece6d4" stroke="#97906f" stroke-width="2.5" stroke-linejoin="round">
+      <path d="M20,10 q-4,60 2,100 l8,0 q-2,-46 0,-100 Z"/>
+      <path d="M35,8 q-2,60 0,104 l9,0 q1,-50 0,-104 Z"/>
+      <path d="M50,8 q-1,54 0,104 l9,0 q2,-44 0,-104 Z"/>
+      <path d="M65,10 q4,54 -2,100 l8,0 q6,-46 2,-100 Z"/>
+      <rect x="14" y="104" width="62" height="40" rx="17"/>
+      <rect x="32" y="136" width="26" height="196" rx="13"/>
+    </g>
+    <path d="M36,150 q10,26 0,56" stroke="#d9d2ba" stroke-width="2.5" fill="none"/>
+    <g fill="#f2bcc8" stroke="#d693a6" stroke-width="2.2" stroke-linejoin="round">
+      <path d="M45,168 C18,142 -2,168 12,192 C22,208 40,198 45,184 Z"/>
+      <path d="M45,168 C72,142 92,168 78,192 C68,208 50,198 45,184 Z"/>
+      <path d="M40,186 C30,214 34,240 26,258 C38,252 46,232 46,206 Z"/>
+      <path d="M50,186 C58,214 54,240 62,258 C50,252 44,232 44,206 Z"/>
+    </g>
+    <circle cx="45" cy="178" r="7.5" fill="#e8a8b8" stroke="#d693a6" stroke-width="2"/>
+  </symbol>
+  <symbol id="sym-spoon" viewBox="0 0 90 360">
+    <g fill="#f1ebd9" stroke="#97906f" stroke-width="2.5">
+      <ellipse cx="45" cy="56" rx="30" ry="48"/>
+      <ellipse cx="45" cy="56" rx="19" ry="33" fill="#e0d8bf" stroke="none"/>
+      <rect x="32" y="98" width="26" height="236" rx="13"/>
+    </g>
+    <path d="M38,120 q10,26 0,56" stroke="#d9d2ba" stroke-width="2.5" fill="none"/>
+    <g fill="#f2bcc8" stroke="#d693a6" stroke-width="2.2" stroke-linejoin="round">
+      <path d="M45,168 C18,142 -2,168 12,192 C22,208 40,198 45,184 Z"/>
+      <path d="M45,168 C72,142 92,168 78,192 C68,208 50,198 45,184 Z"/>
+      <path d="M40,186 C30,214 34,240 26,258 C38,252 46,232 46,206 Z"/>
+      <path d="M50,186 C58,214 54,240 62,258 C50,252 44,232 44,206 Z"/>
+    </g>
+    <circle cx="45" cy="178" r="7.5" fill="#e8a8b8" stroke="#d693a6" stroke-width="2"/>
+  </symbol>
+
+  <!-- home teacup with tea bag -->
+  <symbol id="sym-teacup-tea" viewBox="0 0 240 230">
+    <g class="steam" transform="translate(0,0)">
+      <path d="M84,36 q10,-14 2,-28" transform="translate(10,6)"/>
+      <path d="M120,30 q-10,-14 -2,-28" transform="translate(18,2)"/>
+    </g>
+    <ellipse cx="128" cy="158" rx="102" ry="40" fill="#f2e8d4" stroke="#d8b98a" stroke-width="2.5"/>
+    <ellipse cx="118" cy="104" rx="80" ry="64" fill="#f9f3e3" stroke="#d9b95c" stroke-width="3"/>
+    <ellipse cx="118" cy="102" rx="62" ry="48" fill="#b7c98b"/>
+    <ellipse cx="100" cy="86" rx="22" ry="12" fill="#ffffff" opacity=".3"/>
+    <rect x="86" y="66" width="36" height="32" rx="3" fill="#ddd6b8" stroke="#b8ae88" stroke-width="1.6" transform="rotate(-9 104 82)"/>
+    <path d="M112,88 C140,102 156,120 168,138" fill="none" stroke="#e8e2c8" stroke-width="2"/>
+    <rect x="158" y="136" width="27" height="32" rx="4" fill="#f7f0da" stroke="#c9a45a" stroke-width="2"/>
+    <text x="171.5" y="150" text-anchor="middle" font-size="12" font-weight="600" fill="#b23a35" font-family="Georgia,serif">20</text>
+    <text x="171.5" y="163" text-anchor="middle" font-size="12" font-weight="600" fill="#b23a35" font-family="Georgia,serif">26</text>
+  </symbol>
+
+  <!-- pink teapot (label optional) -->
+  <symbol id="sym-teapot" viewBox="0 0 340 260">
+    <path d="M66,132 C30,118 18,150 30,168 C42,158 56,152 70,148 Z" fill="#f4c6d0" stroke="#c78a9c" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M300,116 C334,108 342,152 318,176 C312,162 304,152 294,148" fill="none" stroke="#c78a9c" stroke-width="12" stroke-linecap="round"/>
+    <path d="M66,150 C66,92 132,70 188,72 C258,74 300,102 300,150 C300,206 240,226 182,226 C112,226 66,204 66,150 Z" fill="#f4c6d0" stroke="#c78a9c" stroke-width="3.4"/>
+    <path d="M96,120 C140,102 236,102 274,124" fill="none" stroke="#ffffff" stroke-width="5" opacity=".5" stroke-linecap="round"/>
+    <ellipse cx="184" cy="76" rx="66" ry="19" fill="#f8eeda" stroke="#c78a9c" stroke-width="3"/>
+    <ellipse cx="184" cy="72" rx="40" ry="9" fill="none" stroke="#d9b95c" stroke-width="2"/>
+    <circle cx="184" cy="52" r="11" fill="#f8eeda" stroke="#c78a9c" stroke-width="3"/>
+    <g class="pot-label" style="opacity:var(--pot-label-o,1)">
+      <ellipse cx="184" cy="160" rx="56" ry="34" fill="#f9f3e3" stroke="#8fb8d8" stroke-width="2.6" stroke-dasharray="1 6.5" stroke-linecap="round"/>
+      <text x="184" y="154" text-anchor="middle" font-family="Playball,cursive" font-size="24" fill="#5a88a8">Back to</text>
+      <text x="184" y="180" text-anchor="middle" font-family="Playball,cursive" font-size="24" fill="#5a88a8">Home</text>
+    </g>
+    <g class="pot-dots" fill="#9fb7d8" opacity=".9">
+      <circle cx="110" cy="176" r="3"/><circle cx="126" cy="192" r="3"/><circle cx="252" cy="184" r="3"/><circle cx="262" cy="166" r="3"/>
+    </g>
+  </symbol>
+
+  <!-- pink teacup (gallery) -->
+  <symbol id="sym-cup" viewBox="0 0 170 160">
+    <path d="M66,128 L60,144 L112,144 L106,128 Z" fill="#f2c3cd" stroke="#b76b7e" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M27,52 C27,102 60,128 86,128 C112,128 145,102 145,52 Q145,45 138,45 L34,45 Q27,45 27,52 Z" fill="#f2c3cd" stroke="#b76b7e" stroke-width="3.2"/>
+    <path d="M145,60 C170,58 172,96 142,100" fill="none" stroke="#b76b7e" stroke-width="6.4" stroke-linecap="round"/>
+    <ellipse cx="86" cy="46" rx="59" ry="14" fill="#fdf6e6" stroke="#b76b7e" stroke-width="2.6"/>
+    <ellipse class="tea-surface" cx="86" cy="46" rx="46" ry="9" style="fill:var(--tea,#fdf6e6);transition:fill .8s ease"/>
+    <g stroke="#7a9a6a" stroke-width="1.8" fill="none" stroke-linecap="round">
+      <path d="M62,86 q8,-8 16,-2"/><path d="M96,96 q8,-8 16,-2"/>
+    </g>
+    <g fill="#d98b9b"><circle cx="70" cy="98" r="2.6"/><circle cx="112" cy="84" r="2.6"/><circle cx="92" cy="76" r="2.2"/></g>
+    <path d="M34,58 C40,88 60,108 86,112" fill="none" stroke="#ffffff" stroke-width="4" opacity=".45" stroke-linecap="round"/>
+  </symbol>
+
+  <!-- silver tray -->
+  <symbol id="sym-tray" viewBox="0 0 660 430">
+    <rect x="-24" y="182" width="64" height="66" rx="15" fill="url(#gradSilver)" stroke="#8f98a4" stroke-width="4"/>
+    <ellipse cx="8" cy="215" rx="13" ry="17" fill="#aeb6bf"/>
+    <rect x="620" y="182" width="64" height="66" rx="15" fill="url(#gradSilver)" stroke="#8f98a4" stroke-width="4"/>
+    <ellipse cx="652" cy="215" rx="13" ry="17" fill="#aeb6bf"/>
+    <rect x="10" y="10" width="640" height="410" rx="30" fill="url(#gradSilver)" stroke="#8f98a4" stroke-width="5"/>
+    <rect x="30" y="30" width="600" height="370" rx="20" fill="none" stroke="#dde2e7" stroke-width="4"/>
+    <rect x="36" y="36" width="588" height="358" rx="18" fill="none" stroke="#ffffff" stroke-width="2" opacity=".6"/>
+    <circle cx="46" cy="46" r="4" fill="#9aa3ae"/><circle cx="614" cy="46" r="4" fill="#9aa3ae"/>
+    <circle cx="46" cy="384" r="4" fill="#9aa3ae"/><circle cx="614" cy="384" r="4" fill="#9aa3ae"/>
+  </symbol>
+
+  <!-- gingham badge -->
+  <symbol id="sym-badge" viewBox="0 0 260 120">
+    <rect x="8" y="8" width="244" height="104" rx="14" fill="#fbf7ee" stroke="#d88aa0" stroke-width="3.4"/>
+    <rect x="20" y="20" width="220" height="80" rx="8" fill="url(#p-gingham)" stroke="#e8c8d4" stroke-width="2"/>
+    <rect x="44" y="30" width="172" height="60" rx="30" fill="#fbf7ee" opacity=".92"/>
+    <text x="130" y="56" text-anchor="middle" font-family="Playball,cursive" font-size="26" fill="#b23a35">Back to,</text>
+    <text x="130" y="84" text-anchor="middle" font-family="Playball,cursive" font-size="27" fill="#b23a35">Home</text>
+    <g transform="translate(58,60)"><circle cx="-6" cy="4" r="6" fill="#c8373c"/><circle cx="6" cy="7" r="6" fill="#c8373c"/><path d="M-4,-2 C0,-10 6,-12 10,-12 M6,1 C8,-6 12,-10 16,-10" stroke="#7c5535" stroke-width="2" fill="none"/></g>
+    <g transform="translate(202,60)"><circle cx="-6" cy="4" r="6" fill="#c8373c"/><circle cx="6" cy="7" r="6" fill="#c8373c"/><path d="M-4,-2 C0,-10 6,-12 10,-12 M6,1 C8,-6 12,-10 16,-10" stroke="#7c5535" stroke-width="2" fill="none"/></g>
+  </symbol>
+
+  <!-- little desserts -->
+  <symbol id="sym-cupcake" viewBox="0 0 64 64">
+    <path d="M14,34 L50,34 L44,58 L20,58 Z" fill="#e8b0c0" stroke="#c9829a" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M20,40 L18,54 M27,38 L26,56 M37,38 L38,56 M44,40 L46,54" stroke="#c9829a" stroke-width="1.6"/>
+    <path d="M12,34 C12,20 22,12 32,12 C42,12 52,20 52,34 Z" fill="#f8f0dc" stroke="#dcc9a8" stroke-width="2"/>
+    <path d="M16,30 q8,-8 16,-2 q8,-8 16,2" fill="none" stroke="#dcc9a8" stroke-width="1.6"/>
+    <circle cx="32" cy="10" r="6" fill="#c8373c"/>
+  </symbol>
+  <symbol id="sym-pudding" viewBox="0 0 64 64">
+    <path d="M10,44 C10,26 20,16 32,16 C44,16 54,26 54,44 Z" fill="#f0c878" stroke="#d8a852" stroke-width="2"/>
+    <path d="M16,34 C22,26 30,24 32,16 C34,24 42,26 48,34" fill="#f8e8c8" stroke="#d8a852" stroke-width="1.6"/>
+    <ellipse cx="32" cy="46" rx="26" ry="6" fill="#f8e8c8" stroke="#d8a852" stroke-width="1.6"/>
+    <circle cx="32" cy="14" r="5.4" fill="#c8373c"/>
+  </symbol>
+  <symbol id="sym-donut" viewBox="0 0 64 64">
+    <circle cx="32" cy="34" r="24" fill="#e8b080" stroke="#c98d5e" stroke-width="2"/>
+    <path d="M10,30 C14,16 26,10 36,12 C48,14 56,24 54,34 C44,28 36,34 28,30 C20,26 14,32 10,30 Z" fill="#f0a8b8"/>
+    <circle cx="32" cy="34" r="8" fill="#f6efe2"/>
+    <g stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M20,26 l4,-3 M36,20 l4,2 M46,30 l4,-2 M18,40 l4,2 M42,42 l4,-3"/></g>
+  </symbol>
+  <symbol id="sym-macaron" viewBox="0 0 64 64">
+    <path d="M10,26 C10,14 22,8 32,8 C42,8 54,14 54,26 C54,30 50,32 46,32 L18,32 C14,32 10,30 10,26 Z" fill="#f2b8c8" stroke="#d693a6" stroke-width="2"/>
+    <rect x="12" y="30" width="40" height="8" rx="4" fill="#faf0e0" stroke="#e3d4b4" stroke-width="1.4"/>
+    <path d="M10,42 C10,54 22,60 32,60 C42,60 54,54 54,42 C54,38 50,36 46,36 L18,36 C14,36 10,38 10,42 Z" fill="#f2b8c8" stroke="#d693a6" stroke-width="2"/>
+  </symbol>
+  <symbol id="sym-cherry" viewBox="0 0 64 64">
+    <path d="M24,44 C22,26 30,12 42,8 M44,46 C44,30 42,18 42,8" fill="none" stroke="#7c5535" stroke-width="2.6" stroke-linecap="round"/>
+    <ellipse cx="46" cy="8" rx="7" ry="3.6" fill="#7f9a6a" transform="rotate(-18 46 8)"/>
+    <circle cx="22" cy="48" r="9" fill="#c8373c"/><circle cx="44" cy="50" r="9" fill="#c8373c"/>
+    <circle cx="19" cy="45" r="2.6" fill="#fff" opacity=".5"/><circle cx="41" cy="47" r="2.6" fill="#fff" opacity=".5"/>
+  </symbol>
+  <symbol id="sym-cookie" viewBox="0 0 64 64">
+    <circle cx="32" cy="34" r="22" fill="#dcae72" stroke="#bd8d54" stroke-width="2"/>
+    <circle cx="24" cy="28" r="3.4" fill="#8a5a3a"/><circle cx="40" cy="26" r="3.4" fill="#8a5a3a"/>
+    <circle cx="30" cy="42" r="3.4" fill="#8a5a3a"/><circle cx="44" cy="40" r="3" fill="#8a5a3a"/><circle cx="16" cy="40" r="3" fill="#8a5a3a"/>
+  </symbol>
+  <symbol id="sym-heart" viewBox="0 0 24 24">
+    <path d="M12,21 C5,15 2,11 2,7.5 C2,4.5 4.5,2.5 7,2.5 C9,2.5 11,3.6 12,5.4 C13,3.6 15,2.5 17,2.5 C19.5,2.5 22,4.5 22,7.5 C22,11 19,15 12,21 Z"/>
+  </symbol>
+  <symbol id="sym-lamp-mini" viewBox="0 0 64 64">
+    <path d="M14,22 A18,18 0 0 1 50,22 Z" fill="#c94f6d" stroke="#a83c58" stroke-width="2"/>
+    <circle cx="10" cy="22" r="3.4" fill="#f2e3c8"/><circle cx="22" cy="22" r="3.4" fill="#f2e3c8"/><circle cx="34" cy="22" r="3.4" fill="#f2e3c8"/><circle cx="46" cy="22" r="3.4" fill="#f2e3c8"/>
+    <rect x="30" y="22" width="4" height="24" fill="#c9a45a"/>
+    <rect x="16" y="34" width="11" height="13" rx="1.6" fill="#fbf6ea" stroke="#d9cbb0" stroke-width="1.4"/>
+    <rect x="38" y="36" width="11" height="13" rx="1.6" fill="#fbf6ea" stroke="#d9cbb0" stroke-width="1.4"/>
+    <ellipse cx="32" cy="50" rx="20" ry="5" fill="#7a5aa0" stroke="#d9b95c" stroke-width="2"/>
+  </symbol>
+  <symbol id="sym-film" viewBox="0 0 64 64">
+    <rect x="8" y="14" width="48" height="36" rx="4" fill="#f9f3e1" stroke="#b89a6a" stroke-width="2.4"/>
+    <rect x="16" y="22" width="32" height="20" rx="2" fill="#8a7aa8"/>
+    <g fill="#b89a6a"><circle cx="13" cy="20" r="2"/><circle cx="13" cy="32" r="2"/><circle cx="13" cy="44" r="2"/><circle cx="51" cy="20" r="2"/><circle cx="51" cy="32" r="2"/><circle cx="51" cy="44" r="2"/></g>
+  </symbol>
+  <symbol id="sym-clock" viewBox="0 0 64 64">
+    <circle cx="32" cy="32" r="22" fill="#f9f3e1" stroke="#b89a6a" stroke-width="2.6"/>
+    <path d="M32,32 L32,18 M32,32 L42,38" stroke="#b23a35" stroke-width="2.6" stroke-linecap="round"/>
+    <circle cx="32" cy="32" r="2.4" fill="#b23a35"/>
+    <path d="M12,20 q6,-8 14,-8 M50,44 q-6,8 -14,8" stroke="#9fb7d8" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="sym-swatch" viewBox="0 0 64 64">
+    <rect x="10" y="10" width="44" height="44" rx="6" fill="#f2c3cd" stroke="#d693a6" stroke-width="2"/>
+    <path d="M10,26 h44 M26,10 v44 M42,10 v44" stroke="#f9f3e1" stroke-width="4"/>
+    <path d="M10,26 h44 M26,10 v44 M42,10 v44" stroke="#d693a6" stroke-width="1.4" stroke-dasharray="3 3"/>
+  </symbol>
+  <symbol id="sym-mail" viewBox="0 0 64 64">
+    <rect x="8" y="16" width="48" height="32" rx="4" fill="#f9f3e1" stroke="#b89a6a" stroke-width="2.4"/>
+    <path d="M10,20 L32,38 L54,20" fill="none" stroke="#b89a6a" stroke-width="2.4"/>
+    <path d="M30,44 q8,-14 20,-12" stroke="#9fb7d8" stroke-width="2" fill="none" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="sym-plant" viewBox="0 0 64 64">
+    <path d="M22,44 h20 l-3,14 h-14 Z" fill="#e8b0c0" stroke="#c9829a" stroke-width="2"/>
+    <path d="M32,44 C32,30 32,22 32,14" stroke="#7a9a6a" stroke-width="2.6" fill="none"/>
+    <path d="M32,26 C24,24 20,18 20,12 C28,12 32,18 32,26 Z" fill="#9dbb85" stroke="#7a9a6a" stroke-width="1.6"/>
+    <path d="M32,34 C40,32 44,26 44,20 C36,20 32,26 32,34 Z" fill="#9dbb85" stroke="#7a9a6a" stroke-width="1.6"/>
+  </symbol>
+  <symbol id="sym-book" viewBox="0 0 64 64">
+    <path d="M32,16 C26,10 16,10 10,14 L10,48 C16,44 26,44 32,50 C38,44 48,44 54,48 L54,14 C48,10 38,10 32,16 Z" fill="#f2c3cd" stroke="#d693a6" stroke-width="2"/>
+    <path d="M32,16 L32,50" stroke="#d693a6" stroke-width="2"/>
+    <path d="M16,22 q6,-3 12,0 M36,22 q6,-3 12,0" stroke="#f9f3e1" stroke-width="2" fill="none"/>
+  </symbol>
+  <symbol id="sym-wand" viewBox="0 0 64 64">
+    <rect x="14" y="34" width="30" height="6" rx="3" transform="rotate(-38 29 37)" fill="#c9a45a"/>
+    <path d="M44,10 l2.4,6.4 6.4,2.4 -6.4,2.4 -2.4,6.4 -2.4,-6.4 -6.4,-2.4 6.4,-2.4 Z" fill="#d9b95c"/>
+    <circle cx="30" cy="14" r="2.6" fill="#f2b8c8"/><circle cx="52" cy="34" r="2.6" fill="#9fb7d8"/>
+  </symbol>
+</defs>
+</svg>
+
+<main id="stage">
+
+  <!-- ================= HOME ================= -->
+  <section class="scene active" id="scene-home" aria-label="首页：下午茶餐桌">
+    <svg class="felt" aria-hidden="true"><rect width="100%" height="100%" filter="url(#feltF)"/></svg>
+
+    <svg class="quilt" viewBox="0 0 1000 560" aria-hidden="true">
+      <g clip-path="url(#quiltClip)" stroke="#f4e7cb" stroke-width="2.6" stroke-dasharray="8 6" stroke-linejoin="round">
+        <path d="M0,0 L210,0 L200,178 L0,186 Z" fill="url(#p-floral)"/>
+        <path d="M210,0 L415,0 L424,190 L200,178 Z" fill="url(#p-plaid)"/>
+        <path d="M415,0 L622,0 L616,182 L424,190 Z" fill="url(#p-mauve)"/>
+        <path d="M622,0 L838,0 L848,192 L616,182 Z" fill="url(#p-rose)"/>
+        <path d="M838,0 L1000,0 L1000,190 L848,192 Z" fill="url(#p-tile)"/>
+        <path d="M0,186 L200,178 L212,382 L0,376 Z" fill="url(#p-polka)"/>
+        <path d="M200,178 L424,190 L404,370 L212,382 Z" fill="url(#p-cream)"/>
+        <path d="M424,190 L616,182 L632,380 L404,370 Z" fill="url(#p-plaid)"/>
+        <path d="M616,182 L848,192 L828,372 L632,380 Z" fill="url(#p-stripe)"/>
+        <path d="M848,192 L1000,190 L1000,378 L828,372 Z" fill="url(#p-damask)"/>
+        <path d="M0,376 L212,382 L222,560 L0,560 Z" fill="url(#p-stripe)"/>
+        <path d="M212,382 L404,370 L410,560 L222,560 Z" fill="url(#p-rose)"/>
+        <path d="M404,370 L632,380 L640,560 L410,560 Z" fill="url(#p-cream)"/>
+        <path d="M632,380 L828,372 L836,560 L640,560 Z" fill="url(#p-damask)"/>
+        <path d="M828,372 L1000,378 L1000,560 L836,560 Z" fill="url(#p-tile)"/>
+      </g>
+      <path d="M30,152 C120,70 250,34 330,26 C470,12 640,14 740,36 C850,58 930,96 958,168 C984,238 982,330 954,398 C920,482 800,528 690,542 C540,562 360,560 240,540 C130,522 60,470 38,392 C18,318 16,220 30,152 Z"
+        fill="none" stroke="#f4e7cb" stroke-width="3.4" stroke-dasharray="4 8" stroke-linecap="round"/>
+    </svg>
+
+    <svg class="doily-home" aria-hidden="true"><use href="#sym-doily"/></svg>
+
+    <div class="plate-title" id="titlePlate" aria-label="Portfolio — product manager &amp; AI creator">
+      <svg viewBox="0 0 560 360"><use href="#sym-plate-title"/></svg>
+    </div>
+
+    <button class="prop cake-plate-home hoverable" id="btnCakes" aria-label="切蛋糕：进入蛋糕画廊">
+      <svg viewBox="0 0 460 250"><use href="#sym-plate-cake"/></svg>
+    </button>
+
+    <svg class="prop fork-home" aria-hidden="true"><use href="#sym-fork"/></svg>
+    <svg class="prop spoon-home" aria-hidden="true"><use href="#sym-spoon"/></svg>
+
+    <svg class="prop teacup-home" aria-hidden="true"><use href="#sym-teacup-tea"/></svg>
+
+    <button class="prop teapot-home hoverable" id="btnCups" aria-label="茶壶：进入茶杯画廊">
+      <svg class="potsvg" viewBox="0 0 340 260"><use href="#sym-teapot"/></svg>
+    </button>
+
+    <svg class="grain" aria-hidden="true"><rect width="100%" height="100%" filter="url(#grain)"/></svg>
+  </section>
+
+  <!-- ================= CUPS ================= -->
+  <section class="scene" id="scene-cups" aria-label="茶杯画廊">
+    <div class="tray-zone">
+      <svg class="doily-cups" viewBox="0 0 420 420" style="position:absolute;left:-11%;top:-11%;width:122%;height:122%" aria-hidden="true"><use href="#sym-doily"/></svg>
+      <svg viewBox="0 0 420 420" aria-hidden="true">
+        <circle cx="210" cy="210" r="176" fill="#e6cda4"/>
+        <circle cx="210" cy="210" r="176" fill="none" stroke="#c9a878" stroke-width="14"/>
+        <circle cx="210" cy="210" r="158" fill="none" stroke="#d9bd90" stroke-width="3"/>
+        <circle cx="210" cy="210" r="176" fill="none" stroke="#b08d5e" stroke-width="3" stroke-dasharray="3 8"/>
+      </svg>
+      <h2 class="clickacup script">Click a<br>Cup</h2>
+      <!-- 5 cups -->
+      <button class="cup" style="left:50%;top:27%" data-proj="lamp" aria-label="作品：旋转木马台灯"><svg viewBox="0 0 170 160"><use href="#sym-cup"/></svg></button>
+      <button class="cup" style="left:30%;top:41%" data-proj="clock" aria-label="作品：云端挂钟"><svg viewBox="0 0 170 160"><use href="#sym-cup"/></svg></button>
+      <button class="cup" style="left:70%;top:41%" data-proj="swatch" aria-label="作品：织物纹样工坊"><svg viewBox="0 0 170 160"><use href="#sym-cup"/></svg></button>
+      <button class="cup" style="left:36%;top:70%" data-proj="mail" aria-label="作品：声音明信片"><svg viewBox="0 0 170 160"><use href="#sym-cup"/></svg></button>
+      <button class="cup" style="left:64%;top:70%" data-proj="plant" aria-label="作品：桌面花园"><svg viewBox="0 0 170 160"><use href="#sym-cup"/></svg></button>
+    </div>
+
+    <button class="prop teapot-cups" id="cupsPot" aria-label="回到首页">
+      <svg class="potsvg" viewBox="0 0 340 260"><use href="#sym-teapot"/></svg>
+    </button>
+
+    <svg id="pourStream" aria-hidden="true"><path/></svg>
+    <svg class="grain" aria-hidden="true"><rect width="100%" height="100%" filter="url(#grain)"/></svg>
+  </section>
+
+  <!-- ================= CAKES ================= -->
+  <section class="scene" id="scene-cakes" aria-label="蛋糕画廊">
+    <button class="prop badge-home" id="btnBadgeHome" aria-label="回到首页">
+      <svg viewBox="0 0 260 120"><use href="#sym-badge"/></svg>
+    </button>
+
+    <div class="placemat" aria-hidden="true">
+      <svg viewBox="0 0 820 470">
+        <g id="laceMat"></g>
+        <rect x="26" y="26" width="768" height="418" rx="18" fill="#f4efe2"/>
+        <g fill="none" stroke="#e7dfc9" stroke-width="2.4" opacity=".9">
+          <path d="M70,90 q30,-22 60,0 q30,-22 60,0 M70,120 q30,-22 60,0 q30,-22 60,0"/>
+          <path d="M630,90 q30,-22 60,0 q30,-22 60,0 M630,120 q30,-22 60,0 q30,-22 60,0"/>
+          <path d="M70,360 q30,22 60,0 q30,22 60,0 M70,390 q30,22 60,0 q30,22 60,0"/>
+          <path d="M630,360 q30,22 60,0 q30,22 60,0 M630,390 q30,22 60,0 q30,22 60,0"/>
+          <circle cx="130" cy="235" r="7"/><circle cx="690" cy="235" r="7"/>
+        </g>
+        <rect x="26" y="26" width="768" height="418" rx="18" fill="none" stroke="#e2d8bd" stroke-width="3" stroke-dasharray="4 7"/>
+      </svg>
+    </div>
+
+    <svg class="prop plate-under" viewBox="0 0 460 250" aria-hidden="true">
+      <ellipse cx="230" cy="150" rx="215" ry="85" fill="#f9f3e1" stroke="#d9b95c" stroke-width="3"/>
+      <ellipse cx="230" cy="146" rx="168" ry="60" fill="#fdf8ea"/>
+    </svg>
+
+    <button class="slice" style="left:38.5%;top:52.5%" data-proj="odyssey" aria-label="作品：AIGC短片《奥德赛的一天》">
+      <svg viewBox="0 0 190 190"><use href="#sym-slice"/></svg>
+    </button>
+    <button class="slice" style="left:50%;top:47%" data-proj="wand" aria-label="作品：提示词炼金术">
+      <svg viewBox="0 0 190 190"><use href="#sym-slice"/></svg>
+    </button>
+    <button class="slice" style="left:61.5%;top:52.5%" data-proj="book" aria-label="作品：手作纹样图书馆">
+      <svg viewBox="0 0 190 190"><use href="#sym-slice"/></svg>
+    </button>
+
+    <svg class="prop fork-cake" aria-hidden="true"><use href="#sym-fork"/></svg>
+    <svg class="prop spoon-cake" aria-hidden="true"><use href="#sym-spoon"/></svg>
+
+    <svg class="grain" aria-hidden="true"><rect width="100%" height="100%" filter="url(#grain)"/></svg>
+  </section>
+
+  <!-- ================= DETAIL ================= -->
+  <section class="scene" id="scene-detail" aria-label="作品详情">
+    <div class="detail-left">
+      <svg class="grain" aria-hidden="true"><rect width="100%" height="100%" filter="url(#grain)"/></svg>
+      <button class="back-btn" id="btnBack">
+        <span class="arr" aria-hidden="true">←</span><span style="font-size:2.2vmin">Back</span>
+        <span class="bcup"><svg viewBox="0 0 64 64"><use href="#sym-cupcake"/></svg></span>
+      </button>
+      <h2 class="proj-title"><span class="ticon" id="projIcon"></span><span id="projName"></span></h2>
+      <div class="proj-body" id="projBody"></div>
+      <div class="deco-btns" aria-hidden="true">
+        <span class="hb"><svg viewBox="0 0 24 24"><use href="#sym-heart"/></svg></span>
+        <span class="gb"></span>
+      </div>
+    </div>
+    <div class="detail-right">
+      <div class="tray-wrap">
+        <svg class="traybg" viewBox="0 0 660 430" aria-hidden="true"><use href="#sym-tray"/></svg>
+        <div class="kraft" aria-hidden="true"></div>
+        <div class="media-slot" id="mediaSlot"></div>
+        <span class="traydeco" style="left:6.5%;top:8%;width:7%;aspect-ratio:1" aria-hidden="true"><svg viewBox="0 0 64 64"><use href="#sym-cookie"/></svg></span>
+        <span class="traydeco" style="right:5.5%;bottom:7%;width:8%;aspect-ratio:1" aria-hidden="true"><svg viewBox="0 0 64 64"><use href="#sym-pudding"/></svg></span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ templates for rich media ============ -->
+<template id="tpl-lamp">
+  <svg viewBox="0 0 460 340" class="lamp-svg" role="img" aria-label="旋转木马台灯 夜间模式演示">
+    <defs>
+      <radialGradient id="lampGlow" cx="50%" cy="42%" r="65%">
+        <stop offset="0%" stop-color="#6a4f92"/><stop offset="100%" stop-color="#2f2342"/>
+      </radialGradient>
+    </defs>
+    <rect width="460" height="340" fill="url(#lampGlow)"/>
+    <g fill="#fdf6e6">
+      <circle cx="40" cy="40" r="1.6" opacity=".8"/><circle cx="120" cy="200" r="1.3" opacity=".5"/>
+      <circle cx="420" cy="60" r="1.6" opacity=".8"/><circle cx="380" cy="300" r="1.3" opacity=".5"/>
+      <circle cx="240" cy="30" r="1.4" opacity=".7"/><circle cx="60" cy="280" r="1.4" opacity=".6"/>
+      <circle cx="330" cy="180" r="1.2" opacity=".5"/><circle cx="180" cy="310" r="1.2" opacity=".5"/>
+    </g>
+    <path d="M52,30 l5,0 M54.5,27.5 l0,5" stroke="#fdf6e6" stroke-width="1.2" opacity=".9"/>
+    <path d="M416,180 l5,0 M418.5,177.5 l0,5" stroke="#fdf6e6" stroke-width="1.2" opacity=".7"/>
+    <text x="56" y="96" class="neon-script">Carousel</text>
+    <text x="56" y="146" class="neon-script">Lamp</text>
+    <g transform="translate(290,168)">
+      <circle cx="0" cy="-6" r="86" fill="#8a6ab0" opacity=".22"/>
+      <g>
+        <animateTransform attributeName="transform" type="rotate" from="0 0 12" to="360 0 12" dur="14s" repeatCount="indefinite"/>
+        <g id="lampPhotos"></g>
+      </g>
+      <rect x="-5" y="0" width="10" height="88" rx="4" fill="#c9a45a"/>
+      <path d="M-78,0 A78,78 0 0 1 78,0 Z" fill="#c94f6d"/>
+      <path d="M-78,0 A78,78 0 0 1 -39,-67.5 L0,0 Z" fill="#f2e3c8"/>
+      <path d="M-39,-67.5 A78,78 0 0 1 0,-78 L0,0 Z" fill="#c94f6d"/>
+      <path d="M0,-78 A78,78 0 0 1 39,-67.5 L0,0 Z" fill="#f2e3c8"/>
+      <path d="M39,-67.5 A78,78 0 0 1 67.5,-39 L0,0 Z" fill="#c94f6d"/>
+      <path d="M67.5,-39 A78,78 0 0 1 78,0 L0,0 Z" fill="#f2e3c8"/>
+      <g>
+        <circle cx="-72" cy="0" r="7" fill="#f2e3c8"/><circle cx="-48" cy="0" r="7" fill="#c94f6d"/>
+        <circle cx="-24" cy="0" r="7" fill="#f2e3c8"/><circle cx="0" cy="0" r="7" fill="#c94f6d"/>
+        <circle cx="24" cy="0" r="7" fill="#f2e3c8"/><circle cx="48" cy="0" r="7" fill="#c94f6d"/>
+        <circle cx="72" cy="0" r="7" fill="#f2e3c8"/>
+      </g>
+      <circle cx="0" cy="-86" r="7" fill="#d9b95c"/>
+      <rect x="-3" y="-97" width="6" height="9" rx="2" fill="#d9b95c"/>
+      <ellipse cx="0" cy="88" rx="62" ry="15" fill="#8a6ab0" stroke="#d9b95c" stroke-width="3"/>
+      <ellipse cx="0" cy="92" rx="50" ry="9" fill="#6a4a8a"/>
+      <circle cx="-34" cy="80" r="3.4" fill="#f2e3c8"/><circle cx="0" cy="83" r="3.4" fill="#f2e3c8"/><circle cx="34" cy="80" r="3.4" fill="#f2e3c8"/>
+    </g>
+  </svg>
+</template>
+
+<template id="tpl-odyssey">
+  <svg viewBox="0 0 460 340" role="img" aria-label="AIGC 短片《奥德赛的一天》剧照">
+    <defs>
+      <linearGradient id="sepiaSky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#e8d6ae"/><stop offset="1" stop-color="#b59a72"/>
+      </linearGradient>
+    </defs>
+    <rect x="14" y="10" width="432" height="320" rx="10" fill="#f3cfd9"/>
+    <g id="lacePhoto"></g>
+    <g class="odyssey-photo">
+      <rect x="52" y="34" width="356" height="272" fill="#fcf9f0"/>
+      <rect x="70" y="52" width="320" height="212" fill="url(#sepiaSky)"/>
+      <circle cx="330" cy="96" r="44" fill="#f4e4bc" opacity=".25"/>
+      <circle cx="330" cy="96" r="28" fill="#f4e4bc" opacity=".85"/>
+      <path d="M70,264 L70,150 L130,118 L180,160 L165,264 Z" fill="#8a6e50" opacity=".75"/>
+      <path d="M390,264 L390,80 L348,96 L336,150 L352,264 Z" fill="#5c4838"/>
+      <path d="M200,264 L215,205 L245,195 L262,230 L258,264 Z" fill="#7a6248" opacity=".8"/>
+      <rect x="70" y="238" width="320" height="26" fill="#c9ad82"/>
+      <path d="M80,252 q40,-6 80,0 q40,6 80,0 q40,-6 80,0 q40,6 60,0" stroke="#b0906a" stroke-width="2" fill="none"/>
+      <g id="sheepRow"></g>
+    </g>
+    <g transform="translate(64,290) rotate(-8)">
+      <circle r="24" fill="#d9a2b2" stroke="#c2879a" stroke-width="2"/>
+      <circle r="15" fill="none" stroke="#c2879a" stroke-width="1.6"/>
+      <g fill="#b97f93"><circle cx="0" cy="-5" r="2.2"/><circle cx="4.8" cy="-1.5" r="2.2"/><circle cx="3" cy="4" r="2.2"/><circle cx="-3" cy="4" r="2.2"/><circle cx="-4.8" cy="-1.5" r="2.2"/></g>
+    </g>
+    <g transform="translate(398,54) rotate(18)">
+      <circle r="20" fill="#a9b88c" stroke="#8fa074" stroke-width="2"/>
+      <path d="M-8,4 C-6,-6 0,-10 8,-8 C6,0 0,6 -8,4 Z" fill="none" stroke="#8fa074" stroke-width="1.8"/>
+    </g>
+  </svg>
+</template>
+
+<script>
+/* ================= helpers ================= */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const SVGNS='http://www.w3.org/2000/svg';
+function el(tag,attrs={},parent){const n=document.createElementNS(SVGNS,tag);for(const k in attrs)n.setAttribute(k,attrs[k]);if(parent)parent.appendChild(n);return n}
+function polar(cx,cy,r,a){return[cx+r*Math.cos(a),cy+r*Math.sin(a)]}
+
+/* audio (synth, no assets) */
+let actx=null; const ac=()=>actx||(actx=new (window.AudioContext||window.webkitAudioContext)());
+document.addEventListener('pointerdown',()=>{try{ac().resume()}catch(e){}},{passive:true});
+function sfxPop(){try{const c=ac(),t=c.currentTime,o=c.createOscillator(),g=c.createGain();
+  o.type='triangle';o.frequency.setValueAtTime(520+Math.random()*260,t);o.frequency.exponentialRampToValueAtTime(980,t+.09);
+  g.gain.setValueAtTime(.001,t);g.gain.exponentialRampToValueAtTime(.14,t+.02);g.gain.exponentialRampToValueAtTime(.001,t+.14);
+  o.connect(g).connect(c.destination);o.start(t);o.stop(t+.16)}catch(e){}}
+function sfxClick(){try{const c=ac(),t=c.currentTime,o=c.createOscillator(),g=c.createGain();
+  o.type='sine';o.frequency.setValueAtTime(340,t);o.frequency.exponentialRampToValueAtTime(190,t+.08);
+  g.gain.setValueAtTime(.12,t);g.gain.exponentialRampToValueAtTime(.001,t+.1);
+  o.connect(g).connect(c.destination);o.start(t);o.stop(t+.12)}catch(e){}}
+function sfxPour(){try{const c=ac(),t=c.currentTime,len=c.sampleRate*1.8,buf=c.createBuffer(1,len,c.sampleRate),d=buf.getChannelData(0);
+  for(let i=0;i<len;i++)d[i]=Math.random()*2-1;
+  const src=c.createBufferSource();src.buffer=buf;
+  const bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.setValueAtTime(700,t);bp.frequency.linearRampToValueAtTime(1100,t+1.2);bp.Q.value=.7;
+  const g=c.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.16,t+.35);g.gain.setValueAtTime(.16,t+1.1);g.gain.linearRampToValueAtTime(0,t+1.7);
+  src.connect(bp).connect(g).connect(c.destination);src.start(t);src.stop(t+1.8)}catch(e){}}
+
+/* ================= decorate shared svg at runtime ================= */
+/* doily scallops */
+(function(){
+  const g=$('#doilyDeco'),CX=210,CY=210;
+  for(let i=0;i<30;i++){const[x,y]=polar(CX,CY,197,i*12*Math.PI/180);el('circle',{cx:x,cy:y,r:12.5,fill:'#f7f1e2'},g)}
+  for(let i=0;i<30;i++){const[x,y]=polar(CX,CY,166,(i*12+6)*Math.PI/180);el('circle',{cx:x,cy:y,r:8,fill:'#f7f1e2'},g)}
+  for(let i=0;i<30;i++){const[x,y]=polar(CX,CY,118,(i*12+6)*Math.PI/180);el('circle',{cx:x,cy:y,r:7,fill:'#f7f1e2'},g)}
+  for(let i=0;i<30;i++){const[x,y]=polar(CX,CY,157,i*12*Math.PI/180);el('circle',{cx:x,cy:y,r:2,fill:'#e2d7bd'},g)}
+})();
+/* plate swag beads */
+(function(){
+  const g=$('#swagBeads');
+  ['swagTop','swagBot'].forEach(id=>{const p=document.getElementById(id),L=p.getTotalLength();
+    for(let i=0;i<=16;i++){const pt=p.getPointAtLength(L*i/16);el('circle',{cx:pt.x,cy:pt.y,r:3.4},g)}});
+})();
+/* placemat + photo lace scallops */
+function scallopRect(gid,x,y,w,h,r,step){
+  const g=document.getElementById(gid);
+  const edge=(x1,y1,x2,y2)=>{const d=Math.hypot(x2-x1,y2-y1),n=Math.max(1,Math.round(d/step));
+    for(let i=0;i<=n;i++){const t=i/n;el('circle',{cx:x1+(x2-x1)*t,cy:y1+(y2-y1)*t,r,fill:'#f4efe2'},g)}};
+  edge(x,y,x+w,y);edge(x+w,y,x+w,y+h);edge(x+w,y+h,x,y+h);edge(x,y+h,x,y);
+}
+scallopRect('laceMat',26,26,768,418,13,34);
+/* sheep in the odyssey photo (built after template clone) */
+function buildSheep(g){
+  for(let i=0;i<6;i++){const x=104+i*38,y=232-(i%2)*4,s=1-i*.05;
+    const gg=el('g',{transform:`translate(${x},${y}) scale(${s})`},g);
+    el('ellipse',{cx:0,cy:0,rx:12,ry:8,fill:'#f3ecdc'},gg);
+    el('circle',{cx:11,cy:-4,r:4.6,fill:'#5f4c3c'},gg);
+    el('path',{d:'M-5,7 l-2,7 M5,7 l2,7',stroke:'#5f4c3c','stroke-width':2},gg);
+  }
+}
+/* lamp polaroids (built after template clone) */
+function buildLampPhotos(g){
+  const cols=['#8a7aa8','#a8788f','#7890a8','#a89078','#7a8a6e','#9a78a0'];
+  for(let i=0;i<8;i++){const a=i*45;
+    const rot=el('g',{transform:`rotate(${a})`},g);
+    el('line',{x1:0,y1:8,x2:0,y2:34,stroke:'#cfc8ba','stroke-width':2},rot);
+    const ph=el('g',{transform:'translate(0,54)'},rot);
+    el('rect',{x:-17,y:-18,width:34,height:38,rx:2,fill:'#fbf6ea'},ph);
+    el('rect',{x:-13,y:-14,width:26,height:24,fill:cols[i%cols.length]},ph);
+    el('rect',{x:-9,y:12,width:18,height:2.4,rx:1.2,fill:'#d9d2c2'},ph);
+  }
+}
+/* odyssey photo lace scallops (built after template clone) */
+function buildLacePhoto(g){
+  const edge=(x1,y1,x2,y2)=>{const d=Math.hypot(x2-x1,y2-y1),n=Math.round(d/26);
+    for(let i=0;i<=n;i++){const t=i/n;el('circle',{cx:x1+(x2-x1)*t,cy:y1+(y2-y1)*t,r:11,fill:'#f3cfd9'},g)}};
+  edge(14,10,446,10);edge(446,10,446,330);edge(446,330,14,330);edge(14,330,14,10);
+}
+
+/* ================= scene router ================= */
+const scenes={home:$('#scene-home'),cups:$('#scene-cups'),cakes:$('#scene-cakes'),detail:$('#scene-detail')};
+let lastGallery='cups';
+function go(name){
+  if(name==='cups')resetPot();
+  Object.entries(scenes).forEach(([k,e])=>e.classList.toggle('active',k===name));
+}
+function resetPot(){const p=$('#cupsPot');p.classList.remove('pouring');p.style.removeProperty('--dx');p.style.removeProperty('--dy')}
+
+/* ================= project data ================= */
+const PROJECTS={
+  lamp:{icon:'sym-lamp-mini',title:'旋转木马台灯',tpl:'tpl-lamp',
+    paras:['一款由生成式 AI 辅助完成概念设计、视觉探索与前端开发的 3D 互动作品，并以 Three.js 实现实时渲染。用户可上传并裁剪 16 张照片，自由换位、切换日夜灯光，通过旋转、起风等互动。',
+      '项目将台灯、旋转木马与数字相册创意融合，在小红书获得 2 万+ 浏览、3000+ 点赞收藏；上线小红书小工具后，已有 1500+ 用户使用。']},
+  clock:{icon:'sym-clock',title:'云端挂钟',
+    paras:['一款把天气数据变成动态插画的小工具：指针随当地时间转动，云朵、雨滴与星空根据实时天气切换，扫码即可添加到手机桌面。',
+      '前端用原生 JS 与 Canvas 实现，已经陪伴 800+ 用户度过每一个清晨与深夜。']},
+  swatch:{icon:'sym-swatch',title:'织物纹样工坊',
+    paras:['一个 AI 辅助的复古纹样生成器。输入关键词即可生成拼布、蕾丝与碎花风格的无缝纹理，支持调整配色与颗粒感，一键导出为印花素材。',
+      '项目持续探索生成式模型在纺织与平面设计流程中的落地方式。']},
+  mail:{icon:'sym-mail',title:'声音明信片',
+    paras:['把一段声音变成一张可以寄出的明信片：录音波形被转译成水彩波纹印在卡片上，收件人刮开涂层即可聆听。',
+      '上线两周内，收到了 1200+ 张来自世界各地的明信片。']},
+  plant:{icon:'sym-plant',title:'桌面花园',
+    paras:['养在浏览器标签页里的小花园：每打开一个新标签，植物都会悄悄长大一点。浇水、除虫、等它开花。',
+      '用最轻的方式，治愈工作与学习的间隙。']},
+  odyssey:{icon:'sym-film',title:'AIGC短片《奥德赛的一天》',tpl:'tpl-odyssey',
+    paras:['受电影《奥德赛》启发、使用 Seedance 2.5 模型创作的 AI 动画短片。项目调用自研的视频提示词生成 Skill 完成分镜设计、角色塑造与动态画面生成，以反差视角揭秘独眼巨人波吕斐摩斯的一天，将史诗神话转化为兼具幽默感与电影质感的日常叙事。',
+      '作品在小红书、抖音等平台累计获得 22 w+ 播放、3000+ 点赞。']},
+  wand:{icon:'sym-wand',title:'提示词炼金术',
+    paras:['一套自研的视频提示词工作流 Skill：从分镜表、角色档案到镜头语言自动生成，把一条 60 秒短片的策划时间从 3 天压缩到 2 小时。',
+      '系列教程全网累计播放 10 w+。']},
+  book:{icon:'sym-book',title:'手作纹样图书馆',
+    paras:['收集并修复了 200+ 张上世纪的手绘织物纹样，用 AI 补全破损部分并重新上色，全部开放下载。',
+      '愿这些温柔的老花纹，能继续出现在新的作品里。']},
+};
+function iconSvg(id){return `<svg viewBox="0 0 64 64" aria-hidden="true"><use href="#${id}"/></svg>`}
+function openProject(id){
+  const p=PROJECTS[id];if(!p)return;
+  $('#projIcon').innerHTML=iconSvg(p.icon);
+  $('#projName').textContent=p.title;
+  $('#projBody').innerHTML=p.paras.map(t=>`<p>${t}</p>`).join('');
+  const slot=$('#mediaSlot');slot.innerHTML='';
+  if(p.tpl){
+    slot.appendChild(document.getElementById(p.tpl).content.cloneNode(true));
+    if(id==='lamp'){const g=slot.querySelector('#lampPhotos');if(g)buildLampPhotos(g)}
+    if(id==='odyssey'){
+      const lp=slot.querySelector('#lacePhoto');if(lp)buildLacePhoto(lp);
+      const sh=slot.querySelector('#sheepRow');if(sh)buildSheep(sh);
+    }
+  }
+  else{
+    const d=document.createElement('div');d.className='generic';
+    d.innerHTML=`<span class="gicon">${iconSvg(p.icon)}</span><span class="gname script">${p.title}</span>`;
+    slot.appendChild(d);
+  }
+  go('detail');
+}
+
+/* ================= interactions ================= */
+$('#btnCups').addEventListener('click',()=>{sfxClick();go('cups')});
+$('#btnCakes').addEventListener('click',()=>{sfxClick();go('cakes')});
+$('#cupsPot').addEventListener('click',()=>{if(pourBusy)return;sfxClick();go('home')});
+$('#btnBadgeHome').addEventListener('click',()=>{sfxClick();go('home')});
+$('#btnBack').addEventListener('click',()=>{sfxClick();go(lastGallery)});
+
+/* --- pour tea on cup click --- */
+let pourBusy=false;
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+$$('.cup').forEach(cup=>{
+  cup.addEventListener('click',async()=>{
+    if(pourBusy)return;pourBusy=true;sfxClick();
+    const pot=$('#cupsPot'),stream=$('#pourStream path'),scene=scenes.cups;
+    const s=scene.getBoundingClientRect(),c=cup.getBoundingClientRect(),p=pot.getBoundingClientRect();
+    const dx=(c.right-s.left)-p.right+p.width*0.42;
+    const dy=(c.top-s.top)-p.top-p.height*0.36;
+    pot.style.setProperty('--dx',dx+'px');pot.style.setProperty('--dy',dy+'px');
+    pot.classList.add('pouring');
+    await wait(760);
+    /* spout tip computed geometrically from the translate target (immune to transition timing) */
+    const cx0=p.left+p.width/2, cy0=p.top+p.height/2;
+    const slx=p.width*0.05-p.width/2, sly=p.height*0.5-p.height/2;
+    const a=-24*Math.PI/180, sc=0.92;
+    const rx=slx*Math.cos(a)-sly*Math.sin(a), ry=slx*Math.sin(a)+sly*Math.cos(a);
+    const sx=cx0+dx+rx*sc, sy=cy0+dy+ry*sc;
+    const ex=c.left-s.left+c.width*0.5, ey=c.top-s.top+c.height*0.14;
+    stream.setAttribute('d',`M${sx},${sy} Q${(sx+ex)/2-8},${(sy+ey)/2+14} ${ex},${ey}`);
+    stream.classList.add('on');sfxPour();
+    await wait(700);
+    cup.classList.add('filled');
+    for(let i=0;i<6;i++)sparkAt(cup);
+    lastGallery='cups';openProject(cup.dataset.proj);
+    await wait(600);stream.classList.remove('on');
+    pourBusy=false;
+  });
+});
+function sparkAt(cup){
+  const s=scenes.cups.getBoundingClientRect(),c=cup.getBoundingClientRect();
+  const sp=document.createElement('span');sp.className='spark';
+  sp.style.left=(c.left-s.left+Math.random()*c.width)+'px';
+  sp.style.top=(c.top-s.top+Math.random()*c.height*0.7)+'px';
+  scenes.cups.appendChild(sp);setTimeout(()=>sp.remove(),850);
+}
+
+/* --- cake slices --- */
+$$('.slice').forEach(sl=>{
+  sl.addEventListener('click',()=>{if(pourBusy)return;pourBusy=true;sfxClick();
+    lastGallery='cakes';openProject(sl.dataset.proj);pourBusy=false;});
+});
+
+/* --- home: hover title spawns desserts --- */
+const KINDS=['sym-cupcake','sym-pudding','sym-donut','sym-macaron','sym-cherry','sym-cookie'];
+const plate=$('#titlePlate');let hoverTimer=null;
+plate.addEventListener('mouseenter',()=>{spawnBurst();hoverTimer=setInterval(spawnBurst,950)});
+plate.addEventListener('mouseleave',()=>clearInterval(hoverTimer));
+plate.addEventListener('click',()=>spawnBurst());
+function spawnBurst(){for(let i=0;i<2;i++)setTimeout(spawnDessert,i*160)}
+function spawnDessert(){
+  const r=plate.getBoundingClientRect(),st=scenes.home.getBoundingClientRect();
+  const cx=r.left-st.left+r.width/2,cy=r.top-st.top+r.height/2;
+  const a=Math.random()*Math.PI*2,rad=r.width*0.42+Math.random()*r.width*0.3;
+  const d=document.createElement('span');d.className='dessert';
+  const size=(30+Math.random()*22)*(Math.min(innerWidth,innerHeight)/900);
+  d.style.width=d.style.height=Math.max(26,size)+'px';
+  d.style.left=(cx+Math.cos(a)*rad-size/2)+'px';
+  d.style.top=(cy+Math.sin(a)*rad*0.8-size/2)+'px';
+  d.innerHTML=`<svg viewBox="0 0 64 64"><use href="#${KINDS[Math.floor(Math.random()*KINDS.length)]}"/></svg>`;
+  scenes.home.appendChild(d);sfxPop();
+  setTimeout(()=>d.remove(),1850);
+}
+</script>
+</body>
+</html>
